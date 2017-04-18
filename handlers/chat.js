@@ -267,7 +267,13 @@ var onChatMessage = function onChatMessage(message) {
     var chatData = Dota2.schema.lookupType("CMsgDOTAChatMessage").decode(message);
     var channel = this._getChannelById(chatData.channel_id);
 
-    if (this.debug) util.log("Received chat message from " + chatData.persona_name + " in channel " + channel.channel_name);
+    if (this.debug) {
+        if (channel) {
+            util.log("Received chat message from " + chatData.persona_name + " in channel " + channel.channel_name);
+        } else {
+            util.log("Received chat message from " + chatData.persona_name + " in unknown channel");
+        }
+    }
     this.emit("chatMessage",
         channel.channel_name,
         chatData.persona_name,
@@ -280,17 +286,19 @@ var onOtherJoinedChannel = function onOtherJoinedChannel(message) {
     /* Someone joined a chat channel you're in. */
     var otherJoined = Dota2.schema.lookupType("CMsgDOTAOtherJoinedChatChannel").decode(message);
     var channel = this._getChannelById(otherJoined.channel_id);
-    if (this.debug) util.log(otherJoined.steam_id + " joined channel " + channel.channel_name);
-    this.emit("chatJoin",
-        channel.channel_name,
-        otherJoined.persona_name,
-        otherJoined.steam_id,
-        otherJoined);
-    // Add member to cached chatChannels
-    channel.members.push(Dota2.schema.lookupType("CMsgDOTAChatMember").create({
-        steam_id: otherJoined.steam_id,
-        persona_name: otherJoined.persona_name
-    }));
+    if (channel) {
+        if (this.debug) util.log(otherJoined.steam_id + " joined channel " + channel.channel_name);
+        this.emit("chatJoin",
+            channel.channel_name,
+            otherJoined.persona_name,
+            otherJoined.steam_id,
+            otherJoined);
+        // Add member to cached chatChannels
+        channel.members.push(Dota2.schema.lookupType("CMsgDOTAChatMember").create({
+            steam_id: otherJoined.steam_id,
+            persona_name: otherJoined.persona_name
+        }));
+    }
 };
 handlers[Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCOtherJoinedChannel] = onOtherJoinedChannel;
 

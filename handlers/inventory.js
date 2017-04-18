@@ -13,7 +13,7 @@ var Dota2 = require("../index"),
 Dota2.Dota2Client.prototype.setItemPositions = function(item_positions) {
     if (this.debug) util.log("Setting item positions.");
     
-    let payload = {
+    var payload = {
         "itemPositions": item_positions
     };
     this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCSetItemPositions, 
