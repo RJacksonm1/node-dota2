@@ -142,6 +142,37 @@ Dota2.BotDifficulty = {
     UNFAIR: 4
 };
 
+/**
+ * Enum for profile card slot types.
+ * @alias module:Dota2.EProfileCardSlotType
+ * @readonly
+ * @enum {number}
+ */
+Dota2.EProfileCardSlotType = {
+	k_EProfileCardSlotType_Empty: 0,
+	k_EProfileCardSlotType_Stat: 1,
+	k_EProfileCardSlotType_Trophy: 2,
+	k_EProfileCardSlotType_Item: 3,
+	k_EProfileCardSlotType_Hero: 4,
+	k_EProfileCardSlotType_Emoticon: 5,
+	k_EProfileCardSlotType_Team: 6
+};
+
+/**
+ * Enum for profile stat ids.
+ * @alias module:Dota2.EStatID
+ * @readonly
+ * @enum {number}
+ */
+Dota2.EStatID = {
+    k_eStat_SoloRank: 1,
+    k_eStat_PartyRank: 2,
+    k_eStat_Wins: 3,
+    k_eStat_Commends: 4,
+    k_eStat_GamesPlayed: 5,
+    k_eStat_FirstMatchDate: 6,
+    k_eStat_PreviousSeasonRank: 7
+};
 
 /**
  * @callback module:Dota2~requestCallback

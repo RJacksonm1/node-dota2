@@ -69,6 +69,42 @@ Dota2.Dota2Client.prototype.requestProfileCard = function(account_id, callback) 
 };
 
 /**
+ * @typedef {Object} module:Dota2.schema.k_EMsgClientToGCSetProfileCardSlot
+ * @property {number} slot_id - The slot id to update
+ * @property {number} slot_type - One of {@link module:Dota2.EProfileCardSlotType}
+ * @property {number} slot_value - Depends on the slot_type. For k_EProfileCardSlotType_Empty its ignored.
+ *                                 For k_EProfileCardSlotType_Stat, one of {@link module:Dota2.EStatID}.
+ *                                 For k_EProfileCardSlotType_Hero, it seems to be 4294967296 (32 bit max) + hero id.
+ *                                 For anything else, you should check with NetHook.
+ */
+
+/**
+ * Sends a message to the Game Coordinator updating the logged in user's profile card slots. 
+ * Listen for {@link module:Dota2.Dota2Client#event:profileCardUpdate|profileCardUpdate} event for Game Coordinator's response. 
+ * Requires the GC to be {@link module:Dota2.Dota2Client#event:ready|ready}.
+ * @alias module:Dota2.Dota2Client#setProfileCardSlots
+ * @param {(Dota2.schema.k_EMsgClientToGCSetProfileCardSlot|Dota2.schema.k_EMsgClientToGCSetProfileCardSlot[])} slots - 1 or more profile card slots
+ */
+Dota2.Dota2Client.prototype.setProfileCardSlots = function(slots) {
+    slots = slots || [];
+    slots = (Array.isArray(slots) ? slots : [slots]);
+    
+    if (slots.length == 0) {
+        this.Logger.error("Account ids must be a single id or array of ids.");
+        return null;
+    }
+    
+    this.Logger.debug("Sending request to set profile card slots");
+    
+    var payload = {
+        slots
+    };
+    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgClientToGCSetProfileCardSlots, 
+                    Dota2.schema.lookupType("CMsgClientToGCSetProfileCardSlots").encode(payload).finish(), 
+                    onSetProfileCardSlotsResponse);
+};
+
+/**
  * Sends a message to the Game Coordinator requesting `account_id`'s profile page. 
  * This method is heavily rate limited. When abused, the GC just stops responding.
  * Even the regular client runs into this limit when you check too many profiles.
@@ -256,6 +292,12 @@ Dota2.Dota2Client.prototype.requestPlayerStats = function(account_id, callback) 
  * @param {string} trophyListResponse.profile_name - The name displayed on the user's dota profile page and profile card
  */
  
+/**
+ * Emitted in response to a {@link module:Dota2.Dota2Client#setProfileCardSlots|request to update the logged in profile's slots}
+ * @event module:Dota2.Dota2Client#profileCardUpdate
+ * @param {CMsgDOTAProfileCard} profileCardResponse - The raw response data containing the user's profile card.
+ */
+
  /**
   * Player statistics
   * @typedef {Object} module:Dota2.schema.CMsgGCToClientPlayerStatsResponse
@@ -314,6 +356,14 @@ var onProfileCardResponse = function onProfileCardResponse(message, callback) {
     if (callback) callback(null, profileCardResponse);
 };
 handlers[Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgClientToGCGetProfileCardResponse] = onProfileCardResponse;
+
+var onSetProfileCardSlotsResponse = function onSetProfileCardSlotsResponse(message) {
+    var setProfileCardSlotsResponse = Dota2.schema.lookupType("CMsgDOTAProfileCard").decode(message);
+
+    this.Logger.debug("Received profile card update");
+    this.emit("profileCardUpdate", setProfileCardSlotsResponse);
+};
+handlers[Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCToClientProfileCardUpdated] = onSetProfileCardSlotsResponse;
 
 var onProfileResponse = function onProfileResponse(message, callback) {
     callback = callback || null;
