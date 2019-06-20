@@ -124,7 +124,7 @@ Dota2.Dota2Client.prototype._handleWelcomeCaches = function handleWelcomeCaches(
         this.Logger.debug("Handling out of date caches");
         welcome.outofdate_subscribed_caches.forEach(function(cache) {
             cache.objects.forEach(function(obj) {
-                handleSubscribedType.call(_self, obj.type_id, obj.object_data[0]);
+                handleSubscribedType.call(_self, obj.type_id, obj.object_data);
             });
         });
 };
