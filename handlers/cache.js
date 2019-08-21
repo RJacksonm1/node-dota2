@@ -110,6 +110,13 @@ function handleSubscribedType(obj_type, object_data, isDelete) {
             this.emit("partyInviteUpdate", party);
             this.PartyInvite = party;
             break;
+        // Account stats snapshot.
+        case cacheTypeIDs.CSODOTAGameAccountClient:
+            var stats = Dota2.schema.CSODOTAGameAccountClient.decode(object_data);
+            this.Logger.debug("Received account stats snapshot");
+            this.emit("accountStatsUpdate", stats);
+            this.AccountStats = stats;
+            break;
         default:
             this.Logger.warn("Unhandled cache ID: " + obj_type);
             break;
@@ -162,6 +169,13 @@ Dota2.Dota2Client.prototype._handleWelcomeCaches = function handleWelcomeCaches(
  * two.
  * @event module:Dota2.Dota2Client#practiceLobbyUpdate
  * @param {CSODOTALobby} lobby - The new state of the lobby.
+ */
+  /**
+ * Emitted when the GC sends an account stats snapshot. The GC is incredibly
+ * inefficient and will send the entire object even if it's a minor update.
+ * You can use this to get MMR values for an account, as well as historical MMR values.
+ * @event module:Dota2.Dota2Client#accountStatsUpdate
+ * @param {CSODOTAGameAccountClient} stats - `CSODOTAGameAccountClient` object with account stats.
  */
  /**
  * Emitted when leaving a lobby (aka, the lobby is cleared). This can
