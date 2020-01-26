@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "jsdoc-to-markdown": "^4.0.1",
-    "mocha": "^6.1.4",
+    "mocha": "^7.0.1",
     "should": "^13.2.3"
   },
   "bundledDependencies": [
