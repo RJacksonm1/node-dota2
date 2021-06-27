@@ -40,3 +40,22 @@ Dota2.Dota2Client.prototype.deleteItem = function(item_id) {
         buffer
     );
 };
+/** 
+ * Attempts to send a gift to another user from your inventory.
+ * Requires the GC to be {@link module:Dota2.Dota2Client#event:ready|ready}.
+ * @param {number} item_id - ID of the item
+ * @param {number} give_to_account_id - Account ID of the receiver
+ * @param {string} gift_message - Message to dedicate the gift
+ */
+ Dota2.Dota2Client.prototype.wrapAndDeliverGift = function(item_id,give_to_account_id,gift_message){
+    if(!this._gcReady) {
+        this.Logger.error("GC not ready, please listen for the 'ready' event.");
+        return null;
+    }
+    var payload = new Dota2.schema.CMsgClientToGCWrapAndDeliverGift({
+        "item_id": item_id,
+        "give_to_account_id": give_to_account_id,
+        "gift_message":gift_message
+    });
+    this.sendToGC(Dota2.schema.EGCItemMsg.k_EMsgClientToGCWrapAndDeliverGift,payload);
+};  

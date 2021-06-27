@@ -1,6 +1,6 @@
 {
-  "name": "dota2",
-  "version": "7.0.3",
+  "name": "korupt-dota2",
+  "version": "1.0.0",
   "dependencies": {
     "deferred": "^0.7.10",
     "long": "^4.0.0",
@@ -25,7 +25,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/Arcana/node-dota2.git"
+    "url": "git://github.com/KoruptTinker/node-dota2.git"
   },
   "keywords": [
     "steam",
